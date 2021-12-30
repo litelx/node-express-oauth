@@ -72,7 +72,7 @@ app.get('/authorize', (req, res) => {
         res.render('login', params);
     }
 
-    res.status(statusCode).end();
+    res.status(statusCode);
 });
 
 app.post('/approve', (req, res) => {
