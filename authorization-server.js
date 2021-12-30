@@ -58,12 +58,18 @@ app.get('/authorize', (req, res) => {
     if (clients[req.query.client_id]) {
         if (req.query.scope) {
             const hasScope = containsAll(clients[req.query.client_id].scopes, req.query.scope.split(" "));
-            if (!hasScope) {
-                res.status(401).end();
+            if (hasScope) {
+                const key = randomString();
+                requests[key] = req.query;
+                const params = {
+                    client: clients[req.query.client_id],
+                    scope: clients[req.query.client_id].scopes,
+                    requestId: key
+                };
+                res.render('login', params);
+                res.status(200).end();
             }
         }
-        requests[randomString()] = req.query;
-        res.status(200).end();
     }
     res.status(401).end();
 });
