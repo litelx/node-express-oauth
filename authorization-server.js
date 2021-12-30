@@ -56,23 +56,27 @@ Your code here
 
 app.get('/authorize', (req, res) => {
     let statusCode = 401;
-    if (clients[req.query.client_id]) {
-        if (req.query.scope) {
-            const hasScope = containsAll(clients[req.query.client_id].scopes, req.query.scope.split(" "));
-            if (hasScope) {
-                statusCode = 200;
-                const key = randomString();
-                requests[key] = req.query;
-                const params = {
-                    client: clients[req.query.client_id],
-                    scope: clients[req.query.client_id].scopes,
-                    requestId: key
-                };
-                res.render('login', params);
-            }
-        }
+    const client = clients[req.query.client_id];
+    if (!client) {
+        res.status(statusCode).end();
     }
+    if (req.query.scope && containsAll(client.scopes, req.query.scope.split(" "))) {
+        statusCode = 200;
+        const requestId = randomString();
+        requests[requestId] = req.query;
+        const params = {
+            client,
+            scope: client.scopes,
+            requestId
+        };
+        res.render('login', params);
+    }
+
     res.status(statusCode).end();
+});
+
+app.post('/approve', (req, res) => {
+
 });
 
 const server = app.listen(config.port, "localhost", function () {
