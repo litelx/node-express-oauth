@@ -62,6 +62,7 @@ app.get('/authorize', (req, res) => {
                 res.status(401).end();
             }
         }
+        requests[randomString()] = req.query;
         res.status(200).end();
     }
     res.status(401).end();
