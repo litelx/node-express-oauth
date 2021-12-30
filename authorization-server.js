@@ -79,8 +79,14 @@ app.get('/authorize', (req, res) => {
 });
 
 app.post('/approve', (req, res) => {
-    const { userName, password, requestID } = req.body;
+    const { userName, password, requestId } = req.body;
     if (!userName || !password || users[userName] !== password) {
+        res.status(401).end();
+        return;
+    }
+    const clientReq = requests[requestId];
+    delete requests[requestId];
+    if (!clientReq) {
         res.status(401).end();
         return;
     }
