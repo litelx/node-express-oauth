@@ -59,24 +59,36 @@ app.get('/authorize', (req, res) => {
     const client = clients[req.query.client_id];
     if (!client) {
         res.status(statusCode).end();
+        return;
     }
-    if (req.query.scope && containsAll(client.scopes, req.query.scope.split(" "))) {
-        statusCode = 200;
-        const requestId = randomString();
-        requests[requestId] = req.query;
-        const params = {
-            client,
-            scope: client.scopes,
-            requestId
-        };
-        res.render('login', params);
+    if (!(req.query.scope && containsAll(client.scopes, req.query.scope.split(" ")))) {
+        res.status(statusCode).end();
+        return;
     }
+    statusCode = 200;
+    const requestId = randomString();
+    requests[requestId] = req.query;
+    const params = {
+        client,
+        scope: client.scopes,
+        requestId
+    };
+    res.render('login', params);
 
     res.status(statusCode);
 });
 
 app.post('/approve', (req, res) => {
-
+    const { userName, password, requestID } = req.body;
+    if (!userName || !password || users[userName] !== password) {
+        res.status(401).end();
+        return;
+    }
+    if (users[userName] === password) {
+        res.status(200).end();
+        return;
+    }
+    res.status(401);
 });
 
 const server = app.listen(config.port, "localhost", function () {
