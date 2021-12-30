@@ -55,7 +55,10 @@ Your code here
 */
 
 app.get('/authorize', (req, res) => {
-    res.status(200).end();
+    if (clients[req.query.client_id]) {
+        res.status(200).end();
+    }
+    res.status(401).end();
 });
 
 const server = app.listen(config.port, "localhost", function () {
