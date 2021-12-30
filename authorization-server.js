@@ -55,10 +55,12 @@ Your code here
 */
 
 app.get('/authorize', (req, res) => {
+    let statusCode = 401;
     if (clients[req.query.client_id]) {
         if (req.query.scope) {
             const hasScope = containsAll(clients[req.query.client_id].scopes, req.query.scope.split(" "));
             if (hasScope) {
+                statusCode = 200;
                 const key = randomString();
                 requests[key] = req.query;
                 const params = {
@@ -67,11 +69,10 @@ app.get('/authorize', (req, res) => {
                     requestId: key
                 };
                 res.render('login', params);
-                res.status(200).end();
             }
         }
     }
-    res.status(401).end();
+    res.status(statusCode).end();
 });
 
 const server = app.listen(config.port, "localhost", function () {
