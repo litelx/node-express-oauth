@@ -108,8 +108,12 @@ app.post('/token', (req, res) => {
         const { code } = req.body;
         const auth = code && decodeAuthCredentials(req.headers.authorization);
         if (auth && auth.clientSecret === clients[auth.clientId].clientSecret) {
-            res.status(200).end();
-            return;
+            if (authorizationCodes[code]) {
+                const authCode = authorizationCodes[code];
+                delete authorizationCodes[code];
+                res.status(200).end();
+                return;
+            }
         }
     }
     res.status(401).end();
