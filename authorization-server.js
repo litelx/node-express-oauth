@@ -91,6 +91,11 @@ app.post('/approve', (req, res) => {
         return;
     }
     if (users[userName] === password) {
+        const key = randomString();
+        authorizationCodes[key] = {
+            clientReq,
+            userName
+        };
         res.status(200).end();
         return;
     }
