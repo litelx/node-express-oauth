@@ -103,6 +103,10 @@ app.post('/approve', (req, res) => {
     res.status(401);
 });
 
+app.post('/token', (req, res) => {
+    res.status(200).end();
+});
+
 const server = app.listen(config.port, "localhost", function () {
     var host = server.address().address
     var port = server.address().port
