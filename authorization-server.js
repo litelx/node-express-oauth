@@ -96,7 +96,8 @@ app.post('/approve', (req, res) => {
             clientReq,
             userName
         };
-        res.status(200).end();
+        const redUri = `${clientReq.redirect_uri}?${clientReq.response_type}=${encodeURIComponent(key)}&state=${clientReq.state}`;
+        res.redirect(redUri);
         return;
     }
     res.status(401);
