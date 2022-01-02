@@ -107,13 +107,26 @@ app.post('/token', (req, res) => {
     if (req.headers.authorization) {
         const { code } = req.body;
         const auth = code && decodeAuthCredentials(req.headers.authorization);
-        if (auth && auth.clientSecret === clients[auth.clientId].clientSecret) {
-            if (authorizationCodes[code]) {
-                const authCode = authorizationCodes[code];
-                delete authorizationCodes[code];
-                res.status(200).end();
-                return;
+        if (auth && 
+            auth.clientSecret === clients[auth.clientId].clientSecret &&
+            authorizationCodes[code]) {
+            const { clientReq, userName } = authorizationCodes[code];
+            delete authorizationCodes[code];
+            const payload = { 
+                userName,
+                scope: clientReq.scope
+            };
+            const options = {
+                algorithm: "RS256",
+                expiresIn: 300,
+                issuer: "http://localhost:" + config.port,
+            };
+            const jwtString = jwt.sign(payload, config.privateKey, options);
+            const token = {
+                access_token: jwtString,
+                token_type: 'bearer'
             }
+            res.json(token);
         }
     }
     res.status(401).end();
