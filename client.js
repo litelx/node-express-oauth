@@ -39,7 +39,7 @@ app.get('/authorize', (req, res) => {
 })
 
 app.get('/callback', async (req, res) => {
-    if (req.query.state !== state) {
+    if (req.query.state && req.query.state !== state) {
         res.status(403).end()
         return
     }
